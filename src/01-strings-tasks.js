@@ -202,10 +202,52 @@ function extractEmails(str) {
  *             '└──────────┘\n'
  *
  */
-function getRectangleString(/* width, height */) {
-  throw new Error('Not implemented');
-}
+function getRectangleString(width, height) {
+  if (width < 2 || height < 2) return '';
 
+  const chars = {
+    leftUpAngle: '┌',
+    rightUpAngle: '┐',
+    leftDownAngle: '└',
+    rightDownAngle: '┘',
+    upNdownBar: '─',
+    sideBar: '│',
+    whitespace: ' ',
+    newline: '\n',
+  };
+  let result = '';
+
+  for (let i = 1; i <= height; i += 1) {
+    for (let j = 1; j <= width; j += 1) {
+      if (i === 1) {
+        if (j === 1) {
+          result += chars.leftUpAngle;
+        } else if (j === width) {
+          result += chars.rightUpAngle + chars.newline;
+        } else {
+          result += chars.upNdownBar;
+        }
+      } else if (i === height) {
+        if (j === 1) {
+          result += chars.leftDownAngle;
+        } else if (j === width) {
+          result += chars.rightDownAngle + chars.newline;
+        } else {
+          result += chars.upNdownBar;
+        }
+      } else if (i !== 1 && i !== height) {
+        if (j === 1) {
+          result += chars.sideBar;
+        } else if (j === width) {
+          result += chars.sideBar + chars.newline;
+        } else {
+          result += chars.whitespace;
+        }
+      }
+    }
+  }
+  return result;
+}
 
 /**
  * Encode specified string with ROT13 cipher
