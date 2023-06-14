@@ -265,8 +265,33 @@ function getRectangleString(width, height) {
  *    => 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm'
  *
  */
-function encodeToRot13(/* str */) {
-  throw new Error('Not implemented');
+function encodeToRot13(str) {
+  const upperCaseAlph = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lowerCaseAlph = 'abcdefghijklmnopqrstuvwxyz';
+  const shift = 13;
+  let isUpperCase = false;
+  let result = '';
+  let position;
+  let cipherPosition;
+
+  for (let i = 0; i < str.length; i += 1) {
+    if (str[i] === str[i].toUpperCase()) {
+      isUpperCase = true;
+      position = upperCaseAlph.indexOf(str[i]);
+    } else {
+      isUpperCase = false;
+      position = lowerCaseAlph.indexOf(str[i]);
+    }
+
+    if (position < 0) {
+      result += str[i];
+    } else {
+      cipherPosition = (position + shift) < lowerCaseAlph.length
+        ? (position + shift) : (Math.abs(lowerCaseAlph.length - position - shift));
+      result += isUpperCase ? upperCaseAlph[cipherPosition] : lowerCaseAlph[cipherPosition];
+    }
+  }
+  return result;
 }
 
 /**
@@ -311,10 +336,15 @@ function isString(value) {
  *   'Q♠' => 50
  *   'K♠' => 51
  */
-function getCardId(/* value */) {
-  throw new Error('Not implemented');
-}
+function getCardId(value) {
+  const firstChars = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  const lastChars = ['♣', '♦', '♥', '♠'];
 
+  const firstCharIdx = firstChars.indexOf(value.slice(0, -1));
+  const lastCharIdx = lastChars.indexOf(value.slice(-1));
+
+  return firstCharIdx + firstChars.length * lastCharIdx;
+}
 
 module.exports = {
   concatenateStrings,
