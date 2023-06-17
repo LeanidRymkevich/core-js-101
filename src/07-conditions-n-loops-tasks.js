@@ -409,10 +409,25 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
-}
+function getCommonDirectoryPath(pathes) {
+  let hasFirstSlash = true;
+  let result = '';
+  const pathesParts = pathes.map((item) => {
+    if (item[0] !== '/') {
+      hasFirstSlash = false;
+      return item.split('/');
+    }
+    return item.split('/').slice(1);
+  });
 
+  if (hasFirstSlash) result += '/';
+  pathesParts.sort((a, b) => a.length - b.length);
+
+  pathesParts[0].forEach((part) => {
+    if (pathesParts.every((path) => path.includes(part))) result += `${part}/`;
+  });
+  return result;
+}
 
 /**
  * Returns the product of two specified matrixes.
@@ -432,10 +447,24 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
-}
+function getMatrixProduct(m1, m2) {
+  if (m2.length !== m1[0].length) return null;
 
+  const result = [];
+  for (let i = 0; i < m1.length; i += 1) result[i] = [];
+
+  let sum;
+  for (let n = 0; n < m2[0].length; n += 1) {
+    for (let i = 0; i < m1.length; i += 1) {
+      sum = 0;
+      for (let j = 0; j < m2.length; j += 1) {
+        sum += m1[i][j] * m2[j][n];
+      }
+      result[i][n] = sum;
+    }
+  }
+  return result;
+}
 
 /**
  * Returns the evaluation of the specified tic-tac-toe position.
@@ -467,10 +496,54 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
-}
+function evaluateTicTacToePosition(position) {
+  let mainCounter = 0;
+  let addCounter = 0;
 
+  // for diagonals
+  for (let i = 0; i < position.length; i += 1) {
+    if (position[0][0] === position[i][i]) mainCounter += 1;
+    if (position[0][position.length - 1] === position[i][position.length - 1 - i]) addCounter += 1;
+  }
+
+  if (mainCounter === position.length && position[0][0]) return position[0][0];
+  if (addCounter === position.length && position[0][position.length - 1]) {
+    return position[0][position.length - 1];
+  }
+
+  let counter;
+  // for rows
+  for (let i = 0; i < position.length; i += 1) {
+    counter = 1;
+    for (let j = 1; j < position.length; j += 1) {
+      if (position[i][0] === position[i][j]) {
+        counter += 1;
+      } else {
+        break;
+      }
+    }
+    if (counter === position.length && position[i][0]) {
+      return position[i][0];
+    }
+  }
+
+  // for columns
+  for (let j = 0; j < position.length; j += 1) {
+    counter = 1;
+    for (let i = 1; i < position.length; i += 1) {
+      if (position[0][j] === position[i][j]) {
+        counter += 1;
+      } else {
+        break;
+      }
+    }
+    if (counter === position.length && position[0][j]) {
+      return position[0][j];
+    }
+  }
+
+  return undefined;
+}
 
 module.exports = {
   getFizzBuzz,
