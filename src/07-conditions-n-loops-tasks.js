@@ -130,8 +130,9 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  return ((rect1.left + rect1.width - rect2.left >= 0)
+      && (rect1.top + rect1.height - rect2.top >= 0));
 }
 
 
@@ -161,8 +162,9 @@ function doRectanglesOverlap(/* rect1, rect2 */) {
  *   { center: { x:0, y:0 }, radius:10 },  { x:10, y:10 }   => false
  *
  */
-function isInsideCircle(/* circle, point */) {
-  throw new Error('Not implemented');
+function isInsideCircle(circle, point) {
+  return ((point.x - circle.center.x) ** 2
+        + (point.y - circle.center.y) ** 2) ** 0.5 < circle.radius;
 }
 
 
@@ -177,10 +179,25 @@ function isInsideCircle(/* circle, point */) {
  *   'abracadabra'  => 'c'
  *   'entente' => null
  */
-function findFirstSingleChar(/* str */) {
-  throw new Error('Not implemented');
-}
+function findFirstSingleChar(str) {
+  let string = str;
+  let repeated = false;
+  let char;
 
+  for (let i = 0; i < string.length; i += 1) {
+    char = string[i];
+    for (let j = i + 1; j < string.length; j += 1) {
+      if (char === string[j]) {
+        repeated = true;
+        string = string.slice(0, j) + (j + 1 < string.length ? string.slice(j + 1) : '');
+      }
+    }
+    if (!repeated) return char;
+    repeated = false;
+  }
+
+  return null;
+}
 
 /**
  * Returns the string representation of math interval,
@@ -204,8 +221,23 @@ function findFirstSingleChar(/* str */) {
  *   5, 3, true, true   => '[3, 5]'
  *
  */
-function getIntervalString(/* a, b, isStartIncluded, isEndIncluded */) {
-  throw new Error('Not implemented');
+function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
+  let start = a;
+  let end = b;
+  let isStart = isStartIncluded;
+  let isEnd = isEndIncluded;
+
+  if (start > end) {
+    let temp = start;
+    start = end;
+    end = temp;
+
+    temp = isStart;
+    isStart = isEnd;
+    isEnd = temp;
+  }
+
+  return `${isStart ? '[' : '('}${start}, ${end}${isEnd ? ']' : ')'}`;
 }
 
 
@@ -221,8 +253,8 @@ function getIntervalString(/* a, b, isStartIncluded, isEndIncluded */) {
  * 'rotator' => 'rotator'
  * 'noon' => 'noon'
  */
-function reverseString(/* str */) {
-  throw new Error('Not implemented');
+function reverseString(str) {
+  return str.split('').reverse().join('');
 }
 
 
@@ -238,8 +270,8 @@ function reverseString(/* str */) {
  *   87354 => 45378
  *   34143 => 34143
  */
-function reverseInteger(/* num */) {
-  throw new Error('Not implemented');
+function reverseInteger(num) {
+  return +num.toString().split('').reverse().join('');
 }
 
 
@@ -263,8 +295,21 @@ function reverseInteger(/* num */) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(number) {
+  const ccn = number.toString();
+  let sum = 0;
+  const parity = ccn.length % 2;
+
+  for (let i = 0; i < ccn.length; i += 1) {
+    if (i % 2 !== parity) {
+      sum += +ccn[i];
+    } else if (+ccn[i] * 2 > 9) {
+      sum += +ccn[i] * 2 - 9;
+    } else {
+      sum += 2 * +ccn[i];
+    }
+  }
+  return sum % 10 === 0;
 }
 
 /**
@@ -281,8 +326,9 @@ function isCreditCardNumber(/* ccn */) {
  *   10000 ( 1+0+0+0+0 = 1 ) => 1
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
-function getDigitalRoot(/* num */) {
-  throw new Error('Not implemented');
+function getDigitalRoot(num) {
+  const sum = num.toString().split('').reduce((acc, item) => acc + +item, 0);
+  return sum > 9 ? getDigitalRoot(sum) : sum;
 }
 
 
@@ -307,10 +353,24 @@ function getDigitalRoot(/* num */) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
-}
+function isBracketsBalanced(string) {
+  const brackets = {
+    ')': '(',
+    ']': '[',
+    '}': '{',
+    '>': '<',
+  };
+  const stack = [];
 
+  for (let i = 0; i < string.length; i += 1) {
+    if (Object.keys(brackets).includes(string[i])) {
+      if (brackets[string[i]] !== stack.pop()) return false;
+    } else {
+      stack.push(string[i]);
+    }
+  }
+  return stack.length === 0;
+}
 
 /**
  * Returns the string with n-ary (binary, ternary, etc, where n <= 10)
@@ -332,8 +392,8 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return num.toString(n);
 }
 
 
